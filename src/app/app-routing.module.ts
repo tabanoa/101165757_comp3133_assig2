@@ -5,15 +5,16 @@ import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { HotelsComponent } from './components/hotels/hotels.component';
 import { BookingComponent } from './components/booking/booking.component';
+import { ValidationGuard } from './validation.guard'
 
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
   { path: 'registration', component: RegistrationComponent },
-  { path: 'hotels', component: HotelsComponent },
-  { path: 'booking', component: BookingComponent},
-  { path: 'home', component: HomeComponent }
+  { path: 'hotels', component: HotelsComponent, canActivate: [ValidationGuard] },
+  { path: 'booking', component: BookingComponent, canActivate: [ValidationGuard] },
+  { path: 'home', component: HomeComponent, canActivate: [ValidationGuard] }
 ];
 
 @NgModule({

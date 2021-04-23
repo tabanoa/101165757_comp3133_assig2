@@ -1,59 +1,33 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, NgForm, Validators } from '@angular/forms';
-import { Apollo } from 'apollo-angular';
-import gql from 'graphql-tag';
-
-const q = gql `
-query GetLogin($username: String!, $password: String!){
-    getLogin(username: $username, password: $password)
-    {
-      _id
-      username
-      email
-    }
-  }
-`;
+import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../auth.service';
 
 @Component({
-  selector: 'app-log-in',
+  selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  email = new FormControl('', [Validators.required, Validators.email]);
-  hide = true;
-  user: any
+  username!: string;
+  password!: string;
 
-  constructor(private apollo: Apollo) {}
+  constructor(private router: Router, private auth: AuthService) {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
 
-  }
+  onSubmit(form: NgForm) {
+    console.log(form.value);
+    this.username = form.value.username;
+    this.password = form.value.password;
 
-  onSubmit(form: NgForm){
-    const unm = form.value.usernameInput
-    const pwd = form.value.passwordInput
-
-    console.log(unm + " " + pwd)
-    this.apollo
-      .query<any>({
-        query: q,
-        variables: {
-          username: unm,
-          password: pwd
-        }
-      })
-      .subscribe(({ data }) => {
-        // this.user = data && data.getLogin;
-        console.log(data)
-      });
-    console.log(form.value)
-  }
-
-  getErrorMessage() {
-    if (this.email.hasError('required')) {
-      return 'You must enter a valid email';
-    }
-    return this.email.hasError('email') ? 'Not a valid email' : '';
+    this.auth.login(this.username, this.password).subscribe((data) => {
+      console.log('logged in:', data);
+      if (data) {
+        this.router.navigate(['/hotels']);
+      } else {
+        alert('Invalid username/password');
+      }
+    });
   }
 }
